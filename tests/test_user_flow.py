@@ -7,15 +7,18 @@ from allure import title
 class TestUserFlow:
     @title("Полный цикл заказа")
     def test_complete_order_flow(self, driver, test_user):
+
         main_page = MainPage(driver)
+        profile_page = ProfilePage(driver)
 
-    main_page.open()
-    main_page.login(test_user['data']['email'], test_user['data']['password'])
-    main_page.add_ingredient('Булка')
-    main_page.add_ingredient('Соус')
-    order_modal = main_page.place_order()
-    order_number = order_modal.get_order_number()
+        main_page.open()
+        main_page.perform_login(test_user['email'], test_user['password'])
+        main_page.add_ingredient('Булка')
+        main_page.add_ingredient('Соус')
+        order_data = main_page.submit_order()
 
-    profile_page = ProfilePage(driver)
-    profile_page.open_order_history()
-    assert profile_page.is_order_in_history(order_number)
+        profile_page.navigate_to_order_history()
+        profile_page.verify_order_presence(order_data['number'])
+
+        profile_page.reset_order_history()
+

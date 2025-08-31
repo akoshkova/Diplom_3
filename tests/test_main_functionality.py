@@ -1,23 +1,30 @@
-import pytest
 from pages.main_page import MainPage
-from data.test_data import TestData
 from allure import title
 
 
 @title("Тесты основной функциональности")
 class TestMainFunctionality:
-    @title("Проверка перехода в конструктор")
-    def test_constructor_navigation(self, driver):
-        page = MainPage(driver)
-        page.open()
-        page.go_to_constructor()
-        assert "constructor" in driver.current_url
+    @title("Проверка навигации по разделам")
+    def test_section_navigation(self, driver):
+        main_page = MainPage(driver)
 
-    @title("Проверка открытия модального окна ингредиента")
-    def test_ingredient_modal(self, driver):
-        page = MainPage(driver)
-        page.open()
-        page.select_ingredient()
-        assert page.is_modal_displayed()
-        page.close_modal()
-        assert not page.is_modal_displayed()
+        # Тест конструктора
+        main_page.go_to_constructor()
+        main_page.verify_constructor_opened()
+
+        # Тест ленты заказов
+        main_page.open_order_feed()
+        main_page.verify_order_feed_opened()
+
+    @title("Проверка работы с модальными окнами")
+    def test_ingredient_modal_interaction(self, driver):
+        main_page = MainPage(driver)
+        main_page.open()
+
+        # Тест открытия/закрытия модального окна
+        ingredient_name = "Булка"
+        main_page.open_ingredient_details(ingredient_name)
+        main_page.verify_modal_visible()
+
+        main_page.close_ingredient_modal()
+        main_page.verify_modal_closed()
