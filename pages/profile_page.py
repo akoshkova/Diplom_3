@@ -14,10 +14,11 @@ class ProfilePage(BasePage):
     ORDER_ITEM = (By.XPATH, '//p[contains(@class, "OrderHistory_number__") and text()="#{order_number}"]/ancestor::li')
     RESET_BUTTON = (By.XPATH, '//button[contains(text(), "Сбросить историю")]')
     USER_AVATAR = (By.CSS_SELECTOR, 'div.Profile_avatar__3Bhqs')
+    ORDER_ITEM_GENERIC = (By.CSS_SELECTOR, 'ul.OrderHistory_list__2a7tU > li')
 
     def __init__(self, driver):
         super().__init__(driver)
-        self.url = "https://example.com/profile"  # Заменить на актуальный URL
+        self.url = "https://stellarburgers.nomoreparties.site/"
 
     @step("Открыть страницу профиля")
     def open(self):
@@ -57,4 +58,16 @@ class ProfilePage(BasePage):
     @step("Получить номер последнего заказа")
     def get_last_order_number(self):
         return self.find_element(self.ORDER_ITEM).text.strip().replace("#", "")
+
+    @step("Проверить отсутствие заказов в истории")
+    def verify_no_orders_in_history(self):
+        self.wait_for_element_visible(
+            self.ORDER_HISTORY_SECTION,
+            "Секция истории заказов не отображается"
+        )
+        self.assert_element_not_present(
+            self.ORDER_ITEM_GENERIC,
+            "В истории заказов обнаружены не удаленные записи"
+        )
+        return self
 

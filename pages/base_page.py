@@ -138,3 +138,11 @@ class BasePage:
     def get_element_attribute(self, locator, attribute):
         element = self.find_element(locator)
         return element.get_attribute(attribute)
+
+    @step("Проверить отсутствие элемента: {locator}")
+    def assert_element_not_present(self, locator, message="Элемент неожиданно присутствует на странице"):
+        try:
+            self.wait.until(EC.presence_of_element_located(locator))
+            raise AssertionError(f"{message} | Локатор: {locator}")
+        except TimeoutException:
+            return self
